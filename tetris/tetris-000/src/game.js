@@ -40,6 +40,27 @@ export function movePiece(game, dx) {
   return true;
 }
 
+// A blocked spawn leaves no active piece; game-over UI is added separately.
+export function dropPiece(game, chooseType = randomType) {
+  if (!game.active) return false;
+  const candidate = { ...game.active, y: game.active.y + 1 };
+  if (canPlace(game.board, candidate)) {
+    game.active = candidate;
+  } else {
+    for (const [x, y] of pieceCells(game.active)) {
+      game.board[y][x] = game.active.type;
+    }
+    const next = spawnPiece(chooseType());
+    game.active = canPlace(game.board, next) ? next : null;
+  }
+  return true;
+}
+
+function randomType() {
+  const types = Object.keys(SHAPES);
+  return types[Math.floor(Math.random() * types.length)];
+}
+
 export function createGame(type = 'T') {
   return { board: createBoard(), active: spawnPiece(type), score: 0 };
 }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BOARD_WIDTH, BOARD_HEIGHT, SHAPES, createBoard, createGame, pieceCells, movePiece } from '../src/game.js';
+import { BOARD_WIDTH, BOARD_HEIGHT, SHAPES, createBoard, createGame, pieceCells, movePiece, dropPiece } from '../src/game.js';
 import { render } from '../src/render.js';
 
 test('board has independent empty rows', () => {
@@ -59,6 +59,53 @@ test('occupied cells block movement without changing state', () => {
     assert.equal(movePiece(game, dx), true);
     assert.equal(game.active.x, before.active.x + dx);
   }
+});
+
+test('falling moves one row without changing the board or score', () => {
+  const game = createGame();
+  const before = structuredClone(game);
+  assert.equal(dropPiece(game), true);
+  assert.deepEqual(game.active, { ...before.active, y: 1 });
+  assert.deepEqual(game.board, before.board);
+  assert.equal(game.score, 0);
+});
+
+test('every shape locks at the floor and spawns the next piece', () => {
+  for (const type of Object.keys(SHAPES)) {
+    const game = createGame(type);
+    const height = Math.max(...SHAPES[type].map(([, y]) => y)) + 1;
+    for (let y = 0; y < BOARD_HEIGHT - height; y++) dropPiece(game);
+    const cells = pieceCells(game.active);
+    assert.equal(Math.max(...cells.map(([, y]) => y)), BOARD_HEIGHT - 1);
+    assert.ok(game.board.every(row => row.every(cell => cell === null)));
+    assert.equal(dropPiece(game, () => 'I'), true);
+    for (const [x, y] of cells) assert.equal(game.board[y][x], type);
+    assert.equal(game.board.flat().filter(Boolean).length, 4);
+    assert.deepEqual(game.active, createGame('I').active);
+  }
+});
+
+test('falling locks above occupied cells without overwriting them', () => {
+  const game = createGame('O');
+  game.board[3][game.active.x] = 'J';
+  dropPiece(game);
+  const cells = pieceCells(game.active);
+  dropPiece(game, () => 'I');
+  for (const [x, y] of cells) assert.equal(game.board[y][x], 'O');
+  assert.equal(game.board[3][4], 'J');
+  assert.equal(game.active.type, 'I');
+});
+
+test('a blocked next spawn does not overwrite settled cells', () => {
+  const game = createGame('O');
+  game.active.y = BOARD_HEIGHT - 2;
+  game.board[0][3] = 'J';
+  dropPiece(game, () => 'I');
+  assert.equal(game.active, null);
+  const before = structuredClone(game);
+  assert.equal(dropPiece(game), false);
+  assert.equal(movePiece(game, 1), false);
+  assert.deepEqual(game, before);
 });
 
 test('renderer shows settled cells and score alongside the active piece', () => {

@@ -31,6 +31,24 @@ test('terminal arrow sequences move and redraw; quit restores input', () => {
   input.destroy();
 });
 
+test('Down arrow soft drops and locks a piece at the floor', () => {
+  const input = new PassThrough();
+  input.setRawMode = () => {};
+  const game = createGame('O');
+  let redraws = 0;
+  const stop = listenForInput(input, game, () => redraws++, () => {});
+  input.write('\x1b[B');
+  assert.equal(game.active.y, 1);
+  assert.equal(redraws, 1);
+  game.active.y = 18;
+  input.write('\x1b[B');
+  assert.equal(game.board.flat().filter(Boolean).length, 4);
+  assert.equal(game.active.y, 0);
+  assert.equal(redraws, 2);
+  stop();
+  input.destroy();
+});
+
 test('Ctrl-C quits raw input', () => {
   const input = new PassThrough();
   input.setRawMode = () => {};
