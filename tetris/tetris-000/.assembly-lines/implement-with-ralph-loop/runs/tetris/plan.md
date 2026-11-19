@@ -1,0 +1,10 @@
+- [ ] Set up a Node.js project with `npm start` that displays a static terminal Tetris board, score, and controls within 24 rows.
+- [ ] Add a board model and all seven tetromino shapes, spawning and rendering an active piece on the running board.
+- [ ] Add terminal keyboard input for left and right movement with wall and occupied-cell collision checks.
+- [ ] Add timed falling, soft drop, piece locking, and spawning the next piece so the game plays continuously.
+- [ ] Add piece rotation with collision checks and simple wall kicks, with tests for movement and rotation boundaries.
+- [ ] Add completed-line clearing and score updates, with tests for single and multiple line clears.
+- [ ] Add hard drop and a next-piece preview backed by a shuffled seven-piece bag, keeping the display within 24 rows.
+- [ ] Add game-over detection and an in-place restart control, with tests for blocked spawning and resetting game state.
+- [ ] Add pause/resume and clean quitting, restoring terminal settings and cursor on exit, interruption, or errors.
+- [ ] Verify the complete game in a terminal, add display-height and gameplay regression tests, and document `npm start` and all controls.
