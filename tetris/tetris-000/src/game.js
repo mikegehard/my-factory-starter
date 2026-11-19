@@ -27,6 +27,19 @@ export function pieceCells(piece) {
   return SHAPES[piece.type].map(([x, y]) => [piece.x + x, piece.y + y]);
 }
 
+export function canPlace(board, piece) {
+  return pieceCells(piece).every(([x, y]) =>
+    x >= 0 && x < BOARD_WIDTH && y >= 0 && y < BOARD_HEIGHT && board[y][x] === null);
+}
+
+export function movePiece(game, dx) {
+  if (!game.active) return false;
+  const candidate = { ...game.active, x: game.active.x + dx };
+  if (!canPlace(game.board, candidate)) return false;
+  game.active = candidate;
+  return true;
+}
+
 export function createGame(type = 'T') {
   return { board: createBoard(), active: spawnPiece(type), score: 0 };
 }

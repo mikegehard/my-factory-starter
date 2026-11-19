@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BOARD_WIDTH, BOARD_HEIGHT, SHAPES, createBoard, createGame, pieceCells } from '../src/game.js';
+import { BOARD_WIDTH, BOARD_HEIGHT, SHAPES, createBoard, createGame, pieceCells, movePiece } from '../src/game.js';
 import { render } from '../src/render.js';
 
 test('board has independent empty rows', () => {
@@ -28,6 +28,36 @@ test('all seven tetrominoes spawn centered, visible, and separate from the board
     assert.equal((output.match(/\[\]/g) ?? []).length, 4);
     assert.deepEqual(game, before);
     assert.ok(game.board.every(row => row.every(cell => cell === null)));
+  }
+});
+
+test('horizontal movement stops at both walls for every shape', () => {
+  for (const type of Object.keys(SHAPES)) {
+    const game = createGame(type);
+    const board = structuredClone(game.board);
+    while (movePiece(game, -1)) {}
+    assert.equal(Math.min(...pieceCells(game.active).map(([x]) => x)), 0);
+    const left = structuredClone(game.active);
+    assert.equal(movePiece(game, -1), false);
+    assert.deepEqual(game.active, left);
+    while (movePiece(game, 1)) {}
+    assert.equal(Math.max(...pieceCells(game.active).map(([x]) => x)), BOARD_WIDTH - 1);
+    assert.equal(movePiece(game, 1), false);
+    assert.deepEqual(game.board, board);
+  }
+});
+
+test('occupied cells block movement without changing state', () => {
+  for (const dx of [-1, 1]) {
+    const game = createGame('O');
+    const x = game.active.x + (dx < 0 ? -1 : 2);
+    game.board[1][x] = 'J';
+    const before = structuredClone(game);
+    assert.equal(movePiece(game, dx), false);
+    assert.deepEqual(game, before);
+    game.board[1][x] = null;
+    assert.equal(movePiece(game, dx), true);
+    assert.equal(game.active.x, before.active.x + dx);
   }
 });
 

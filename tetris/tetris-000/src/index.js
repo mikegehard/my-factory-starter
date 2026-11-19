@@ -1,5 +1,17 @@
 import { render } from './render.js';
 import { createGame } from './game.js';
 
+import { listenForInput } from './input.js';
+
+const game = createGame();
 // No trailing newline: the final display row must not scroll a 24-row terminal.
-process.stdout.write(render(createGame()));
+if (process.stdin.isTTY && process.stdout.isTTY) {
+  const redraw = () => process.stdout.write(`\x1b[H${render(game)}`);
+  process.stdout.write('\x1b[2J\x1b[H');
+  redraw();
+  const stopInput = listenForInput(process.stdin, game, redraw, () => {
+    stopInput();
+  });
+} else {
+  process.stdout.write(render(game));
+}
