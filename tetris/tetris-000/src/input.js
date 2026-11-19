@@ -1,5 +1,5 @@
 import { emitKeypressEvents } from 'node:readline';
-import { dropPiece, movePiece } from './game.js';
+import { dropPiece, movePiece, rotatePiece } from './game.js';
 
 export function listenForInput(input, game, redraw, quit) {
   emitKeypressEvents(input);
@@ -10,6 +10,10 @@ export function listenForInput(input, game, redraw, quit) {
   function onKeypress(text, key = {}) {
     if (key.name === 'q' || (key.ctrl && key.name === 'c')) {
       quit();
+      return;
+    }
+    if (key.name === 'up') {
+      if (rotatePiece(game)) redraw();
       return;
     }
     if (key.name === 'down') {

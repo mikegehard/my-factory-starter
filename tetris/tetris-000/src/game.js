@@ -24,7 +24,15 @@ export function spawnPiece(type = 'T') {
 }
 
 export function pieceCells(piece) {
-  return SHAPES[piece.type].map(([x, y]) => [piece.x + x, piece.y + y]);
+  let cells = SHAPES[piece.type];
+  // Rotate in a fixed square so four turns restore the original position.
+  const pivot = piece.type === 'I' ? 1.5 : 1;
+  if (piece.type !== 'O') {
+    for (let turn = 0; turn < (piece.rotation ?? 0); turn++) {
+      cells = cells.map(([x, y]) => [2 * pivot - y, x]);
+    }
+  }
+  return cells.map(([x, y]) => [piece.x + x, piece.y + y]);
 }
 
 export function canPlace(board, piece) {
@@ -38,6 +46,20 @@ export function movePiece(game, dx) {
   if (!canPlace(game.board, candidate)) return false;
   game.active = candidate;
   return true;
+}
+
+export function rotatePiece(game) {
+  if (!game.active || game.active.type === 'O') return false;
+  const rotated = { ...game.active, rotation: ((game.active.rotation ?? 0) + 1) % 4 };
+  // Simple horizontal kicks, preferring the smallest displacement.
+  for (const dx of [0, -1, 1, -2, 2, -3, 3]) {
+    const candidate = { ...rotated, x: rotated.x + dx };
+    if (canPlace(game.board, candidate)) {
+      game.active = candidate;
+      return true;
+    }
+  }
+  return false;
 }
 
 // A blocked spawn leaves no active piece; game-over UI is added separately.
