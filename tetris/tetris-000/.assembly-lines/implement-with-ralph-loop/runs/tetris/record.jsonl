@@ -145,3 +145,4 @@
 {"time":"2026-11-20T12:25:41.968832068Z","kind":"usage","machine":"planner","provider":"openai-codex","model":"openai-codex/gpt-6.1-sol","input_tokens":9889,"output_tokens":305}
 {"time":"2026-11-20T12:25:41.968898216Z","kind":"result","machine":"planner","text":"{\"complete\": true}","result":{"complete":true}}
 {"time":"2026-11-20T12:25:41.968916463Z","kind":"end","machine":"planner"}
+{"time":"2026-11-20T12:25:41.995440468Z","kind":"run","run":"tetris","state":"finished"}
