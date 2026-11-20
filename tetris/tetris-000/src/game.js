@@ -41,7 +41,7 @@ export function canPlace(board, piece) {
 }
 
 export function movePiece(game, dx) {
-  if (game.gameOver || !game.active) return false;
+  if (game.gameOver || game.paused || !game.active) return false;
   const candidate = { ...game.active, x: game.active.x + dx };
   if (!canPlace(game.board, candidate)) return false;
   game.active = candidate;
@@ -49,7 +49,7 @@ export function movePiece(game, dx) {
 }
 
 export function rotatePiece(game) {
-  if (game.gameOver || !game.active || game.active.type === 'O') return false;
+  if (game.gameOver || game.paused || !game.active || game.active.type === 'O') return false;
   const rotated = { ...game.active, rotation: ((game.active.rotation ?? 0) + 1) % 4 };
   // Simple horizontal kicks, preferring the smallest displacement.
   for (const dx of [0, -1, 1, -2, 2, -3, 3]) {
@@ -72,7 +72,7 @@ export function clearLines(board) {
 }
 
 export function dropPiece(game, chooseType) {
-  if (game.gameOver || !game.active) return false;
+  if (game.gameOver || game.paused || !game.active) return false;
   const candidate = { ...game.active, y: game.active.y + 1 };
   if (canPlace(game.board, candidate)) {
     game.active = candidate;
@@ -92,7 +92,7 @@ export function dropPiece(game, chooseType) {
 }
 
 export function hardDrop(game) {
-  if (game.gameOver || !game.active) return false;
+  if (game.gameOver || game.paused || !game.active) return false;
   while (canPlace(game.board, { ...game.active, y: game.active.y + 1 })) {
     game.active.y++;
   }
@@ -118,7 +118,13 @@ export function createGame(type, random = Math.random) {
   } else {
     type = bag.shift();
   }
-  return { board: createBoard(), active: spawnPiece(type), score: 0, next: bag.shift(), bag, gameOver: false };
+  return { board: createBoard(), active: spawnPiece(type), score: 0, next: bag.shift(), bag, gameOver: false, paused: false };
+}
+
+export function togglePause(game) {
+  if (game.gameOver) return false;
+  game.paused = !game.paused;
+  return true;
 }
 
 export function restartGame(game) {

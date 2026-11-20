@@ -2,7 +2,7 @@ import { BOARD_WIDTH, BOARD_HEIGHT, SHAPES, createBoard, pieceCells } from './ga
 
 export { BOARD_WIDTH, BOARD_HEIGHT } from './game.js';
 
-export function render({ board = createBoard(), active = null, score = 0, next = null, gameOver = false } = {}) {
+export function render({ board = createBoard(), active = null, score = 0, next = null, gameOver = false, paused = false } = {}) {
   const border = `+${'-'.repeat(BOARD_WIDTH * 2)}+`;
   const cells = board.map(row => [...row]);
   if (active) {
@@ -23,6 +23,8 @@ export function render({ board = createBoard(), active = null, score = 0, next =
         preview = '  ' + Array.from({ length: 4 }, (_, x) =>
           SHAPES[next].some(([px, py]) => px === x && py === y - 1) ? '[]' : '  ').join('');
       }
+      if (paused && y === 4) preview = '  PAUSED';
+      if (paused && y === 5) preview = '  P Resume';
       if (gameOver && y === 4) preview = '  GAME OVER';
       if (gameOver && y === 5) preview = '  R Restart';
       return `|${row.map(cell => cell ? '[]' : '  ').join('')}|${preview}`;

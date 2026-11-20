@@ -1,15 +1,17 @@
 import { emitKeypressEvents } from 'node:readline';
-import { dropPiece, hardDrop, movePiece, restartGame, rotatePiece } from './game.js';
+import { dropPiece, hardDrop, movePiece, restartGame, rotatePiece, togglePause } from './game.js';
 
 export function listenForInput(input, game, redraw, quit) {
   emitKeypressEvents(input);
   const wasRaw = Boolean(input.isRaw);
-  input.setRawMode(true);
-  input.resume();
 
   function onKeypress(text, key = {}) {
     if (key.name === 'q' || (key.ctrl && key.name === 'c')) {
       quit();
+      return;
+    }
+    if (key.name === 'p') {
+      if (togglePause(game)) redraw();
       return;
     }
     if (key.name === 'r') {
@@ -32,10 +34,24 @@ export function listenForInput(input, game, redraw, quit) {
     if (dx && movePiece(game, dx)) redraw();
   }
 
-  input.on('keypress', onKeypress);
-  return () => {
+  let stopped = false;
+  const stop = () => {
+    if (stopped) return;
+    stopped = true;
     input.removeListener('keypress', onKeypress);
-    input.setRawMode(wasRaw);
-    input.pause();
+    try {
+      input.setRawMode(wasRaw);
+    } finally {
+      input.pause();
+    }
   };
+  try {
+    input.setRawMode(true);
+    input.resume();
+    input.on('keypress', onKeypress);
+  } catch (error) {
+    stop();
+    throw error;
+  }
+  return stop;
 }
