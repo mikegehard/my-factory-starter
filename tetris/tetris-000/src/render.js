@@ -1,8 +1,8 @@
-import { BOARD_WIDTH, BOARD_HEIGHT, createBoard, pieceCells } from './game.js';
+import { BOARD_WIDTH, BOARD_HEIGHT, SHAPES, createBoard, pieceCells } from './game.js';
 
 export { BOARD_WIDTH, BOARD_HEIGHT } from './game.js';
 
-export function render({ board = createBoard(), active = null, score = 0 } = {}) {
+export function render({ board = createBoard(), active = null, score = 0, next = null } = {}) {
   const border = `+${'-'.repeat(BOARD_WIDTH * 2)}+`;
   const cells = board.map(row => [...row]);
   if (active) {
@@ -16,7 +16,15 @@ export function render({ board = createBoard(), active = null, score = 0 } = {})
   return [
     `TETRIS  Score: ${score}`,
     border,
-    ...cells.map(row => `|${row.map(cell => cell ? '[]' : '  ').join('')}|`),
+    ...cells.map((row, y) => {
+      let preview = '';
+      if (next && y === 0) preview = `  Next: ${next}`;
+      if (next && (y === 1 || y === 2)) {
+        preview = '  ' + Array.from({ length: 4 }, (_, x) =>
+          SHAPES[next].some(([px, py]) => px === x && py === y - 1) ? '[]' : '  ').join('');
+      }
+      return `|${row.map(cell => cell ? '[]' : '  ').join('')}|${preview}`;
+    }),
     border,
     '←/→ Move  ↑ Rotate  ↓ Drop  Space Hard drop  P Pause  Q Quit',
   ].join('\n');

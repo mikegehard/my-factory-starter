@@ -72,7 +72,7 @@ export function clearLines(board) {
 }
 
 // A blocked spawn leaves no active piece; game-over UI is added separately.
-export function dropPiece(game, chooseType = randomType) {
+export function dropPiece(game, chooseType) {
   if (!game.active) return false;
   const candidate = { ...game.active, y: game.active.y + 1 };
   if (canPlace(game.board, candidate)) {
@@ -83,17 +83,40 @@ export function dropPiece(game, chooseType = randomType) {
     }
     const cleared = clearLines(game.board);
     game.score += [0, 100, 300, 500, 800][cleared];
-    const next = spawnPiece(chooseType());
+    const next = spawnPiece(chooseType ? chooseType() : game.next);
+    if (game.bag.length === 0) game.bag = createBag();
+    game.next = game.bag.shift();
     game.active = canPlace(game.board, next) ? next : null;
   }
   return true;
 }
 
-function randomType() {
-  const types = Object.keys(SHAPES);
-  return types[Math.floor(Math.random() * types.length)];
+export function hardDrop(game) {
+  if (!game.active) return false;
+  while (canPlace(game.board, { ...game.active, y: game.active.y + 1 })) {
+    game.active.y++;
+  }
+  // Use the same locking, line clearing, and spawning path as gravity.
+  return dropPiece(game);
 }
 
-export function createGame(type = 'T') {
-  return { board: createBoard(), active: spawnPiece(type), score: 0 };
+export function createBag(random = Math.random) {
+  const bag = Object.keys(SHAPES);
+  for (let i = bag.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [bag[i], bag[j]] = [bag[j], bag[i]];
+  }
+  return bag;
+}
+
+export function createGame(type, random = Math.random) {
+  const bag = createBag(random);
+  if (type !== undefined) {
+    // Explicit starting types are useful for deterministic scenarios.
+    spawnPiece(type);
+    bag.splice(bag.indexOf(type), 1);
+  } else {
+    type = bag.shift();
+  }
+  return { board: createBoard(), active: spawnPiece(type), score: 0, next: bag.shift(), bag };
 }
