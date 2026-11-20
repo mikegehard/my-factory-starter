@@ -41,7 +41,7 @@ export function canPlace(board, piece) {
 }
 
 export function movePiece(game, dx) {
-  if (!game.active) return false;
+  if (game.gameOver || !game.active) return false;
   const candidate = { ...game.active, x: game.active.x + dx };
   if (!canPlace(game.board, candidate)) return false;
   game.active = candidate;
@@ -49,7 +49,7 @@ export function movePiece(game, dx) {
 }
 
 export function rotatePiece(game) {
-  if (!game.active || game.active.type === 'O') return false;
+  if (game.gameOver || !game.active || game.active.type === 'O') return false;
   const rotated = { ...game.active, rotation: ((game.active.rotation ?? 0) + 1) % 4 };
   // Simple horizontal kicks, preferring the smallest displacement.
   for (const dx of [0, -1, 1, -2, 2, -3, 3]) {
@@ -71,9 +71,8 @@ export function clearLines(board) {
   return cleared;
 }
 
-// A blocked spawn leaves no active piece; game-over UI is added separately.
 export function dropPiece(game, chooseType) {
-  if (!game.active) return false;
+  if (game.gameOver || !game.active) return false;
   const candidate = { ...game.active, y: game.active.y + 1 };
   if (canPlace(game.board, candidate)) {
     game.active = candidate;
@@ -86,13 +85,14 @@ export function dropPiece(game, chooseType) {
     const next = spawnPiece(chooseType ? chooseType() : game.next);
     if (game.bag.length === 0) game.bag = createBag();
     game.next = game.bag.shift();
-    game.active = canPlace(game.board, next) ? next : null;
+    game.gameOver = !canPlace(game.board, next);
+    game.active = game.gameOver ? null : next;
   }
   return true;
 }
 
 export function hardDrop(game) {
-  if (!game.active) return false;
+  if (game.gameOver || !game.active) return false;
   while (canPlace(game.board, { ...game.active, y: game.active.y + 1 })) {
     game.active.y++;
   }
@@ -118,5 +118,12 @@ export function createGame(type, random = Math.random) {
   } else {
     type = bag.shift();
   }
-  return { board: createBoard(), active: spawnPiece(type), score: 0, next: bag.shift(), bag };
+  return { board: createBoard(), active: spawnPiece(type), score: 0, next: bag.shift(), bag, gameOver: false };
+}
+
+export function restartGame(game) {
+  if (!game.gameOver) return false;
+  // Keep the object shared by input, gravity, and rendering.
+  Object.assign(game, createGame());
+  return true;
 }
