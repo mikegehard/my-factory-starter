@@ -1,0 +1,64 @@
+
+> terminal-tetris@1.0.0 test
+> node --test
+
+✔ blocked spawning ends the game, preserving board and score (2.754486ms)
+✔ restart resets game state in place with a fresh playable bag (0.736252ms)
+✔ R restarts through the existing input listener and redraws once (2.349565ms)
+✔ board has independent empty rows (2.031824ms)
+✔ all seven tetrominoes spawn centered, visible, and separate from the board (3.060459ms)
+✔ horizontal movement stops at both walls for every shape (2.125702ms)
+✔ occupied cells block movement without changing state (0.417719ms)
+✔ falling moves one row without changing the board or score (0.464069ms)
+✔ every shape locks at the floor and spawns the next piece (1.373277ms)
+✔ falling locks above occupied cells without overwriting them (0.257763ms)
+✔ a blocked next spawn does not overwrite settled cells (0.250953ms)
+✔ renderer shows settled cells and score alongside the active piece (0.343049ms)
+✔ session clears a line, pauses, tops out, restarts, and quits using real key sequences (14.961435ms)
+✔ gravity schedules falling, redraws after ticks, and cancels on stop (1.774041ms)
+✔ Fisher-Yates bag contains every type and supports deterministic shuffling (2.939715ms)
+✔ successive seven-piece bags supply the active piece and accurate preview (3.855544ms)
+✔ hard drop lands above obstacles, locks once, and spawns the preview (0.35753ms)
+✔ hard drop clears lines and is harmless without an active piece (0.590896ms)
+✔ each preview displays four cells within the 24-row display (1.451132ms)
+✔ Space hard drops and redraws immediately (1.594956ms)
+✔ terminal arrow sequences move and redraw; quit restores input (4.192798ms)
+✔ Down arrow soft drops and locks a piece at the floor (0.797643ms)
+✔ Ctrl-C quits raw input (0.395637ms)
+✔ no completed rows leaves the board and score unchanged (2.939609ms)
+✔ locking clears 1 line(s) and adds 100 points (1.022787ms)
+✔ locking clears 2 line(s) and adds 300 points (0.362979ms)
+✔ locking clears 3 line(s) and adds 500 points (0.390779ms)
+✔ locking clears 4 line(s) and adds 800 points (0.252134ms)
+✔ separated full rows collapse together and new empty rows are independent (0.26285ms)
+✔ lines clear before checking whether the next piece can spawn (0.218114ms)
+✔ pause freezes all movement and gravity, then resumes the same piece (4.516129ms)
+✔ game over cannot be paused (0.266545ms)
+✔ static display fits in 24 rows with a 10×20 board (2.109128ms)
+✔ all previews and status messages fit a 60×24 terminal without mutating state (5.747485ms)
+✔ entry point prints the display without an extra row (44.751583ms)
+✔ four clockwise rotations restore every non-square piece without changing board or score (4.40268ms)
+✔ rotated shapes stop at walls and can kick back into the board (2.859922ms)
+✔ floor and occupied cells reject rotation without mutating state (0.549606ms)
+✔ square and missing active piece do not rotate (1.095865ms)
+✔ up arrow rotates and redraws only successful rotations (1.866107ms)
+✔ q restores terminal and releases session resources (3.48563ms)
+✔ ctrl-c restores terminal and releases session resources (0.603785ms)
+✔ SIGINT restores terminal and releases session resources (0.536446ms)
+✔ SIGTERM restores terminal and releases session resources (0.415145ms)
+✔ SIGHUP restores terminal and releases session resources (0.412602ms)
+✔ exit restores terminal and releases session resources (1.34136ms)
+✔ uncaughtException restores terminal and releases session resources (0.550677ms)
+✔ unhandledRejection restores terminal and releases session resources (0.357209ms)
+✔ input-error restores terminal and releases session resources (0.439812ms)
+✔ output-error restores terminal and releases session resources (0.564287ms)
+✔ cleanup preserves an originally raw input stream (0.28982ms)
+✔ startup errors also restore the terminal (0.395627ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 931.256133

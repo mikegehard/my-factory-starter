@@ -1,0 +1,2 @@
+PASS: npm start in an 80x24 pseudo-terminal; initial display, gravity, arrow keys, hard drop, pause/resume, and Q quit.
+PASS: 10 rendered frames each occupy 24 rows; exit code 0; cursor/screen escape restoration and original termios verified.

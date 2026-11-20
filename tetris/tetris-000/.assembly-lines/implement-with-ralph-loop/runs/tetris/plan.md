@@ -7,4 +7,4 @@
 - [x] Add hard drop and a next-piece preview backed by a shuffled seven-piece bag, keeping the display within 24 rows.
 - [x] Add game-over detection and an in-place restart control, with tests for blocked spawning and resetting game state.
 - [x] Add pause/resume and clean quitting, restoring terminal settings and cursor on exit, interruption, or errors.
-- [ ] Verify the complete game in a terminal, add display-height and gameplay regression tests, and document `npm start` and all controls.
+- [x] Verify the complete game in a terminal, add display-height and gameplay regression tests, and document `npm start` and all controls.
