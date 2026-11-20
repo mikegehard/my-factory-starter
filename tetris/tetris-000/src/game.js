@@ -62,6 +62,15 @@ export function rotatePiece(game) {
   return false;
 }
 
+// Remove full rows together, preserving the order of all surviving rows.
+export function clearLines(board) {
+  const remaining = board.filter(row => row.some(cell => cell === null));
+  const cleared = board.length - remaining.length;
+  const empty = Array.from({ length: cleared }, () => Array(BOARD_WIDTH).fill(null));
+  board.splice(0, board.length, ...empty, ...remaining);
+  return cleared;
+}
+
 // A blocked spawn leaves no active piece; game-over UI is added separately.
 export function dropPiece(game, chooseType = randomType) {
   if (!game.active) return false;
@@ -72,6 +81,8 @@ export function dropPiece(game, chooseType = randomType) {
     for (const [x, y] of pieceCells(game.active)) {
       game.board[y][x] = game.active.type;
     }
+    const cleared = clearLines(game.board);
+    game.score += [0, 100, 300, 500, 800][cleared];
     const next = spawnPiece(chooseType());
     game.active = canPlace(game.board, next) ? next : null;
   }
