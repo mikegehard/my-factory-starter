@@ -5,6 +5,6 @@
 - [x] Add piece rotation with collision checks and simple wall kicks, with tests for movement and rotation boundaries.
 - [x] Add completed-line clearing and score updates, with tests for single and multiple line clears.
 - [x] Add hard drop and a next-piece preview backed by a shuffled seven-piece bag, keeping the display within 24 rows.
-- [ ] Add game-over detection and an in-place restart control, with tests for blocked spawning and resetting game state.
+- [x] Add game-over detection and an in-place restart control, with tests for blocked spawning and resetting game state.
 - [ ] Add pause/resume and clean quitting, restoring terminal settings and cursor on exit, interruption, or errors.
 - [ ] Verify the complete game in a terminal, add display-height and gameplay regression tests, and document `npm start` and all controls.
