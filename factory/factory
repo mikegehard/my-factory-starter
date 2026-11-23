@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+factory_dir="$(dirname "$(readlink -f "$0")")"
+"$factory_dir/gradlew" --quiet --project-dir "$factory_dir" installDist >&2
+exec "$factory_dir/build/install/factory/bin/factory" "$@"
