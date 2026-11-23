@@ -23,7 +23,7 @@ dependencies {
 val cucumber by tasks.registering(JavaExec::class) {
     group = "verification"
     description = "Run the homework examples; use -Ptags=@real-agent for real agents."
-    dependsOn(tasks.testClasses)
+    dependsOn(tasks.testClasses, tasks.installDist)
     classpath = sourceSets["test"].runtimeClasspath
     mainClass.set("io.cucumber.core.cli.Main")
     args(
@@ -33,6 +33,7 @@ val cucumber by tasks.registering(JavaExec::class) {
         "--tags", providers.gradleProperty("tags").getOrElse("not @real-agent"),
         "spec/features"
     )
+    providers.gradleProperty("example").orNull?.let { args("--name", it) }
 }
 
 tasks.test {
